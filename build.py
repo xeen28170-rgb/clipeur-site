@@ -7,6 +7,7 @@ SRC, OUT = ROOT / "src", ROOT / "docs"
 SITE = "https://xeen28170-rgb.github.io/clipforge-site/"
 REPO = "https://github.com/xeen28170-rgb/clipforge-site"
 CONTACT_URL = REPO + "/issues/new"
+VER = "2"
 UPDATED = "23 novembre 2026"
 
 HEAD = """<!DOCTYPE html>
@@ -27,7 +28,7 @@ HEAD = """<!DOCTYPE html>
 <meta property="og:image" content="{site}img/icon.png">
 <meta name="twitter:card" content="summary">
 <link rel="preload" href="fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v={ver}">
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
@@ -81,9 +82,9 @@ def build():
                     .replace("{CONTACT}", CONTACT_URL).replace("{SITE}", SITE))
         slug = f.stem
         url = SITE if slug == "index" else SITE + slug
-        scripts = '<script src="download.js" defer></script>' if meta.get("download") else ""
-        html = (HEAD.format(title=meta["title"], desc=meta["desc"], url=url, site=SITE)
-                + body + FOOT.format(repo=REPO, contact=CONTACT_URL, scripts=scripts))
+        scripts = '<script src="download.js?v={ver}" defer></script>' if meta.get("download") else ""
+        html = (HEAD.format(title=meta["title"], desc=meta["desc"], url=url, site=SITE, ver=VER)
+                + body + FOOT.format(repo=REPO, contact=CONTACT_URL, scripts=scripts.replace("{ver}", VER)))
         (OUT / f.name).write_text(html, encoding="utf-8")
         print("ok", f.name)
 
