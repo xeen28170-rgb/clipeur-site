@@ -7,7 +7,7 @@ SRC, OUT = ROOT / "src", ROOT / "docs"
 SITE = "https://xeen28170-rgb.github.io/clipforge-site/"
 REPO = "https://github.com/xeen28170-rgb/clipforge-site"
 CONTACT_URL = REPO + "/issues/new"
-VER = "2"
+VER = "3"
 UPDATED = "23 novembre 2026"
 
 HEAD = """<!DOCTYPE html>
@@ -33,7 +33,7 @@ HEAD = """<!DOCTYPE html>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
 <header class="top"><div class="wrap">
-  <a class="brand" href="./"><img src="img/logo.svg" alt="" width="34" height="34">Clip<b>Forge</b></a>
+  <a class="brand" href="./"><img src="img/logo.svg" alt="" width="34" height="34"><span>Clip<b>Forge</b></span></a>
   <nav aria-label="Navigation principale">
     <a href="./#fonctions">Fonctionnalités</a>
     <a href="./#plateformes">Plateformes</a>
@@ -48,7 +48,7 @@ FOOT = """</main>
 <footer><div class="wrap">
   <div class="foot">
     <div>
-      <a class="brand" href="./"><img src="img/logo.svg" alt="" width="30" height="30">Clip<b>Forge</b></a>
+      <a class="brand" href="./"><img src="img/logo.svg" alt="" width="30" height="30"><span>Clip<b>Forge</b></span></a>
       <p>Forge tes meilleurs moments. Logiciel gratuit de clipping vidéo par IA pour Windows, développé par Xeen.</p>
     </div>
     <div><h4>Produit</h4><ul>
@@ -85,6 +85,8 @@ def build():
         scripts = '<script src="download.js?v={ver}" defer></script>' if meta.get("download") else ""
         html = (HEAD.format(title=meta["title"], desc=meta["desc"], url=url, site=SITE, ver=VER)
                 + body + FOOT.format(repo=REPO, contact=CONTACT_URL, scripts=scripts.replace("{ver}", VER)))
+        if slug == "404":  # servie à n'importe quelle adresse : liens absolus
+            html = re.sub(r'(href|src)="(?!https?:|/|#)(\./)?', r'\1="/clipforge-site/', html)
         (OUT / f.name).write_text(html, encoding="utf-8")
         print("ok", f.name)
 
