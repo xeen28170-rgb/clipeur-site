@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const PORT = process.env.SERVER_PORT || process.env.PORT || 3000;
-const pub = path.join(__dirname, 'public');
+const pub = path.join(__dirname, 'docs');
 const routes = { '/': 'index.html', '/terms': 'terms.html', '/privacy': 'privacy.html' };
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.png': 'image/png', '.txt': 'text/plain' };
 http.createServer((req, res) => {
