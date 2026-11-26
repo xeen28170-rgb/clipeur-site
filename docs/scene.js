@@ -5,6 +5,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
+import { CLIPS, drawClip } from './clipart.js?v=5'
 
 const canvas = document.getElementById('scene')
 const root = document.documentElement
@@ -154,39 +155,48 @@ function start() {
 
   const FW = 1.6
   const FH = (FW * 16) / 9
-  const glass = new THREE.MeshStandardMaterial({ color: 0x0d0d12, metalness: 0.75, roughness: 0.2, transparent: true, opacity: 0.84, side: THREE.DoubleSide })
+  const glass = new THREE.MeshStandardMaterial({ color: 0x0d0d12, metalness: 0.75, roughness: 0.2 })
   const plane = new THREE.PlaneGeometry(FW, FH)
-  const faceGeo = new THREE.CircleGeometry(0.3, 32)
-  const shoulderGeo = new THREE.CircleGeometry(0.58, 32, 0, Math.PI)
   const piece = (mat, w, h, d, x, y, z) => {
     const m = new THREE.Mesh(unit, mat)
     m.scale.set(w, h, d)
     m.position.set(x, y, z)
     return m
   }
-  const frames = []
-  const FRAMES = small ? 9 : 18
-  for (let i = 0; i < FRAMES; i++) {
+  const clipCanvases = CLIPS.map(() => {
+    const c = document.createElement('canvas')
+    c.width = small ? 144 : 216
+    c.height = small ? 256 : 384
+    return c
+  })
+  const clipTex = clipCanvases.map((c, i) => {
+    drawClip(c, CLIPS[i], i * 0.9, accCss)
+    const tx = new THREE.CanvasTexture(c)
+    tx.colorSpace = THREE.SRGBColorSpace
+    tx.anisotropy = 4
+    return tx
+  })
+  const clipMats = clipTex.map((map) => new THREE.MeshBasicMaterial({ map, toneMapped: false, color: 0xffffff }))
+  const makeFrame = (k) => {
     const g = new THREE.Group()
     const t = 0.05
-    const face = new THREE.Mesh(faceGeo, dimMat)
-    face.position.set(0, 0.42, 0.01)
-    const shoulders = new THREE.Mesh(shoulderGeo, dimMat)
-    shoulders.position.set(0, -0.32, 0.01)
-    const prog = rand(0.2, 0.9)
+    const back = new THREE.Mesh(plane, glass)
+    back.rotation.y = Math.PI
+    back.position.z = -0.01
     g.add(
-      new THREE.Mesh(plane, glass),
+      new THREE.Mesh(plane, clipMats[k % clipMats.length]),
+      back,
       piece(glowMat, FW + t, t, t, 0, FH / 2, 0),
       piece(glowMat, FW + t, t, t, 0, -FH / 2, 0),
       piece(glowMat, t, FH, t, -FW / 2, 0, 0),
-      piece(glowMat, t, FH, t, FW / 2, 0, 0),
-      face,
-      shoulders,
-      piece(hotMat, FW * 0.3, 0.11, 0.02, -0.18, -0.82, 0.03),
-      piece(glowMat, FW * 0.2, 0.11, 0.02, 0.33, -0.82, 0.03),
-      piece(dimMat, FW * 0.84, 0.03, 0.01, 0, -FH / 2 + 0.2, 0.02),
-      piece(hotMat, FW * 0.84 * prog, 0.035, 0.015, -FW * 0.42 + (FW * 0.84 * prog) / 2, -FH / 2 + 0.2, 0.03)
+      piece(glowMat, t, FH, t, FW / 2, 0, 0)
     )
+    return g
+  }
+  const frames = []
+  const FRAMES = small ? 9 : 18
+  for (let i = 0; i < FRAMES; i++) {
+    const g = makeFrame(i)
     const side = i % 2 ? 1 : -1
     g.position.set(side * rand(6.5, 14), rand(2.6, 9), Z0 - 6 - (i / FRAMES) * (LEN - 20) + rand(-3, 3))
     g.scale.setScalar(rand(0.85, 1.45))
@@ -194,6 +204,15 @@ function start() {
     frames.push(g)
     scene.add(g)
   }
+  const flyers = []
+  for (let k = 0; k < 4; k++) {
+    const g = makeFrame(k + 2)
+    g.visible = false
+    scene.add(g)
+    flyers.push({ g, t0: -10, from: new THREE.Vector3(), len: 1, side: 1 })
+  }
+  let nextCut = 2.5
+  let texTurn = 0
 
   const TZ = Z1 - 6
   const RINGS = 16
@@ -315,27 +334,31 @@ function start() {
   let t = 0
   let moved = false
 
-  addEventListener('pointermove', (e) => {
-    ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1)
-    moved = true
-  }, { passive: true })
-  addEventListener('pointerdown', (e) => {
-    if (e.target.closest('a,button,summary,input,textarea,select,label,.mock')) return
-    ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1)
-    ray.setFromCamera(ndc, camera)
-    if (!ray.ray.intersectPlane(floor, tmp)) return
-    pulses.push({ x: tmp.x, z: tmp.z, t0: t })
+  function burst(x, z, power) {
+    pulses.push({ x, z, t0: t })
     for (let i = 0; i < N; i++) {
-      const dx = ePos[i * 3] - tmp.x
-      const dz = ePos[i * 3 + 2] - tmp.z
+      const dx = ePos[i * 3] - x
+      const dz = ePos[i * 3 + 2] - z
       const d = Math.hypot(dx, dz)
       if (d < 5 && ePos[i * 3 + 1] < 6) {
-        const k = (5 - d) / 5
+        const k = ((5 - d) / 5) * power
         eVel[i * 3] += (dx / (d + 0.01)) * 3.5 * k
         eVel[i * 3 + 1] += 4.5 * k
         eVel[i * 3 + 2] += (dz / (d + 0.01)) * 3.5 * k
       }
     }
+  }
+
+  addEventListener('pointermove', (e) => {
+    ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1)
+    moved = true
+  }, { passive: true })
+  addEventListener('pointerdown', (e) => {
+    if (e.target.closest('a,button,summary,input,textarea,select,label,.studio')) return
+    ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1)
+    ray.setFromCamera(ndc, camera)
+    if (!ray.ray.intersectPlane(floor, tmp)) return
+    burst(tmp.x, tmp.z, 1)
   })
 
   const scrollP = () => {
@@ -390,6 +413,7 @@ function start() {
         const ring = d - age * 16
         k += 4 * Math.exp(-(ring * ring) / 2.5) * (1 - age / 1.8)
       }
+      if (s.cut !== undefined) k += 6 * Math.exp(-(t - s.cut) * 2.5)
       col.copy(ACC).multiplyScalar(k)
       segStrip.setColorAt(i, col)
     }
@@ -411,6 +435,41 @@ function start() {
       g.rotation.y = u.ry + Math.sin(t * 0.35 + u.ph) * 0.18 + mouse.x * 0.25
       g.rotation.x = -mouse.y * 0.12 + Math.sin(t * 0.5 + u.ph) * 0.04
       g.rotation.z = Math.sin(t * 0.4 + u.ph) * 0.05
+    }
+
+    if (!reduce && t > nextCut && intro >= 1) {
+      nextCut = t + rand(1.4, 2.6)
+      const cz0 = camera.position.z
+      const pool = segs.filter((s) => s.z < cz0 - 9 && s.z > cz0 - 38 && Math.abs(s.x - camera.position.x) < 11 && s.len > 2)
+      const f = flyers.find((f) => t - f.t0 > 2.6)
+      if (pool.length && f) {
+        const s = pool[Math.floor(Math.random() * pool.length)]
+        s.cut = t
+        f.t0 = t
+        f.from.set(s.x, 0.55, s.z)
+        f.len = s.len
+        f.side = s.x > camera.position.x ? 1 : -1
+        f.g.visible = true
+        burst(s.x, s.z, 0.8)
+      }
+    }
+    for (const f of flyers) {
+      const u = (t - f.t0) / 2.4
+      if (u >= 1) { f.g.visible = false; continue }
+      if (u < 0) continue
+      const e1 = 1 - Math.pow(1 - Math.min(1, u * 1.7), 3)
+      const e2 = u * u * (3 - 2 * u)
+      f.g.position.set(f.from.x + f.side * e2 * 3.5, f.from.y + e1 * 3.4 + e2 * 4.5, f.from.z - e2 * 6)
+      f.g.rotation.set(-Math.PI / 2 * (1 - e1), f.side * -0.35 * e2, 0)
+      const fade = u > 0.82 ? (1 - u) / 0.18 : 1
+      const sx = THREE.MathUtils.lerp((GAP * 0.66) / FW, 1.2, e1) * fade
+      const sy = THREE.MathUtils.lerp(f.len / FH, 1.2, e1) * fade
+      f.g.scale.set(sx, sy, 1)
+    }
+    if (!reduce) {
+      const k = texTurn++ % clipCanvases.length
+      drawClip(clipCanvases[k], CLIPS[k], t + k * 0.9, accCss)
+      clipTex[k].needsUpdate = true
     }
 
     tunnel.children.forEach((c, i) => {

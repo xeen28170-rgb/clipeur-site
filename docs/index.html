@@ -16,7 +16,7 @@
 <meta property="og:image" content="https://xeen28170-rgb.github.io/clipeur-site/img/icon.png">
 <meta name="twitter:card" content="summary">
 <link rel="preload" href="fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
@@ -34,7 +34,7 @@
   <div class="wrap">
     <div>
       <span class="tag"><i></i><span id="dl-tag">Bêta gratuite · Windows</span></span>
-      <h1><em>Clipeur</em> : tes meilleurs moments en clips prêts à poster.</h1>
+      <h1 id="title"><em>Clipeur</em> : tes <mark>meilleurs moments</mark> en clips prêts à poster.</h1>
       <p class="lead">Clipeur analyse tes vidéos et tes streams, trouve les passages qui accrochent, les recadre en vertical, ajoute les sous-titres et t'aide à les publier sur TikTok, YouTube Shorts et Instagram. L'analyse se fait sur ton PC.</p>
       <div class="cta">
         <a class="btn btn-acc" id="dl-btn" href="https://github.com/xeen28170-rgb/clipeur-site/releases/latest" aria-disabled="false">
@@ -47,17 +47,24 @@
       <p class="dl-meta" id="dl-meta"><span>Windows 11 · 64 bits</span><span>Gratuit</span><span>Sans compte Clipeur</span></p>
     </div>
 
-    <div class="mock" aria-hidden="true">
-      <div class="mock-bar"><i></i><i></i><i></i><span>Clipeur · Moments détectés</span></div>
-      <div class="mock-body">
-        <div class="mock-main">
-          <div class="mock-h"><span>stream_samedi.mp4 · 2 h 14</span><span>6 moments</span></div>
-          <div class="moment on"><span class="thumbm"></span><div><b>Clutch 1v4 au dernier round</b><small>01:12:48 → 01:13:21</small></div><span class="score">94</span></div>
-          <div class="moment"><span class="thumbm"></span><div><b>Le chat réagit au jumpscare</b><small>00:41:05 → 00:41:32</small></div><span class="score">88</span></div>
-          <div class="moment"><span class="thumbm"></span><div><b>Fou rire avec les viewers</b><small>01:57:10 → 01:57:46</small></div><span class="score mid">71</span></div>
-          <div class="tl"><span class="wave"></span><span class="sel"></span></div>
+    <div class="studio" aria-hidden="true">
+      <div class="mock-bar"><i></i><i></i><i></i><span>Clipeur · stream_samedi.mp4</span><b class="done">Analyse terminée</b></div>
+      <div class="studio-body">
+        <div class="studio-main">
+          <div class="hype-h"><span>Intensité du stream</span><span>2 h 14 · 6 moments</span></div>
+          <div class="hype">
+            <svg viewBox="0 0 300 90" preserveAspectRatio="none"><defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a1f" stop-opacity=".5"/><stop offset="1" stop-color="#ff5a1f" stop-opacity="0"/></linearGradient></defs><path class="hype-a" d=""/><path class="hype-l" d=""/></svg>
+            <span class="pk" data-i="1">88</span><span class="pk" data-i="0">94</span><span class="pk" data-i="2">71</span>
+            <span class="ph"></span>
+            <div class="hype-t"><span>0:00</span><span>1:07</span><span>2:14</span></div>
+          </div>
+          <div class="moments">
+            <div class="mo on"><canvas width="72" height="128"></canvas><div><b>Clutch 1v4 au dernier round</b><small>01:12:48 → 01:13:21</small></div><span class="score">94</span></div>
+            <div class="mo"><canvas width="72" height="128"></canvas><div><b>Le chat réagit au jumpscare</b><small>00:41:05 → 00:41:32</small></div><span class="score">88</span></div>
+            <div class="mo"><canvas width="72" height="128"></canvas><div><b>Fou rire avec les viewers</b><small>01:57:10 → 01:57:46</small></div><span class="score mid">71</span></div>
+          </div>
         </div>
-        <div class="phone"><span class="face"></span><span class="body"></span><span class="cap">il reste <u>un</u> round</span></div>
+        <div class="phone"><canvas id="phone" width="324" height="576"></canvas><span class="fmt">9:16 · 1080p</span></div>
       </div>
     </div>
   </div>
@@ -197,7 +204,8 @@
 </div></footer>
 <canvas id="scene" aria-hidden="true"></canvas><div class="veil" aria-hidden="true"></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
-<script type="module" src="scene.js?v=4"></script>
-<script src="download.js?v=4" defer></script>
+<script type="module" src="hero.js?v=5"></script>
+<script type="module" src="scene.js?v=5"></script>
+<script src="download.js?v=5" defer></script>
 </body>
 </html>

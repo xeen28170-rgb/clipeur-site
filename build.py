@@ -7,7 +7,7 @@ SRC, OUT = ROOT / "src", ROOT / "docs"
 SITE = "https://xeen28170-rgb.github.io/clipeur-site/"
 REPO = "https://github.com/xeen28170-rgb/clipeur-site"
 CONTACT_URL = REPO + "/issues/new"
-VER = "4"
+VER = "5"
 UPDATED = "23 novembre 2026"
 
 HEAD = """<!DOCTYPE html>
@@ -75,6 +75,7 @@ FOOT = """</main>
 
 SCENE = """<canvas id="scene" aria-hidden="true"></canvas><div class="veil" aria-hidden="true"></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module" src="hero.js?v={ver}"></script>
 <script type="module" src="scene.js?v={ver}"></script>
 """
 
