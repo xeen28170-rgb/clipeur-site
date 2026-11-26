@@ -4,10 +4,10 @@ import pathlib, re
 
 ROOT = pathlib.Path(__file__).parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
-SITE = "https://xeen28170-rgb.github.io/clipforge-site/"
-REPO = "https://github.com/xeen28170-rgb/clipforge-site"
+SITE = "https://xeen28170-rgb.github.io/clipeur-site/"
+REPO = "https://github.com/xeen28170-rgb/clipeur-site"
 CONTACT_URL = REPO + "/issues/new"
-VER = "3"
+VER = "4"
 UPDATED = "23 novembre 2026"
 
 HEAD = """<!DOCTYPE html>
@@ -33,7 +33,7 @@ HEAD = """<!DOCTYPE html>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
 <header class="top"><div class="wrap">
-  <a class="brand" href="./"><img src="img/logo.svg" alt="" width="34" height="34"><span>Clip<b>Forge</b></span></a>
+  <a class="brand" href="./"><img src="img/logo.svg" alt="" width="34" height="34"><span>Clip<b>eur</b></span></a>
   <nav aria-label="Navigation principale">
     <a href="./#fonctions">Fonctionnalités</a>
     <a href="./#plateformes">Plateformes</a>
@@ -48,8 +48,8 @@ FOOT = """</main>
 <footer><div class="wrap">
   <div class="foot">
     <div>
-      <a class="brand" href="./"><img src="img/logo.svg" alt="" width="30" height="30"><span>Clip<b>Forge</b></span></a>
-      <p>Forge tes meilleurs moments. Logiciel gratuit de clipping vidéo par IA pour Windows, développé par Xeen.</p>
+      <a class="brand" href="./"><img src="img/logo.svg" alt="" width="30" height="30"><span>Clip<b>eur</b></span></a>
+      <p>Logiciel gratuit de clipping vidéo par IA pour Windows, développé par Xeen.</p>
     </div>
     <div><h4>Produit</h4><ul>
       <li><a href="./#telecharger">Télécharger</a></li>
@@ -64,13 +64,18 @@ FOOT = """</main>
       <li><a href="{contact}">Contact</a></li>
     </ul></div>
   </div>
-  <p class="fine">© 2026 ClipForge by Xeen. Ce site n'utilise aucun cookie ni traceur.
+  <p class="fine">© 2026 Clipeur by Xeen. Ce site n'utilise aucun cookie ni traceur.
   TikTok, YouTube, Instagram, Twitch et Metricool sont des marques de leurs propriétaires respectifs ;
-  ClipForge n'est ni affilié à ces services, ni approuvé ou sponsorisé par eux.</p>
+  Clipeur n'est ni affilié à ces services, ni approuvé ou sponsorisé par eux.</p>
 </div></footer>
 {scripts}
 </body>
 </html>
+"""
+
+SCENE = """<canvas id="scene" aria-hidden="true"></canvas><div class="veil" aria-hidden="true"></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module" src="scene.js?v={ver}"></script>
 """
 
 def build():
@@ -83,10 +88,12 @@ def build():
         slug = f.stem
         url = SITE if slug == "index" else SITE + slug
         scripts = '<script src="download.js?v={ver}" defer></script>' if meta.get("download") else ""
+        if meta.get("scene"):
+            scripts = SCENE + scripts
         html = (HEAD.format(title=meta["title"], desc=meta["desc"], url=url, site=SITE, ver=VER)
                 + body + FOOT.format(repo=REPO, contact=CONTACT_URL, scripts=scripts.replace("{ver}", VER)))
         if slug == "404":  # servie à n'importe quelle adresse : liens absolus
-            html = re.sub(r'(href|src)="(?!https?:|/|#)(\./)?', r'\1="/clipforge-site/', html)
+            html = re.sub(r'(href|src)="(?!https?:|/|#)(\./)?', r'\1="/clipeur-site/', html)
         (OUT / f.name).write_text(html, encoding="utf-8")
         print("ok", f.name)
 

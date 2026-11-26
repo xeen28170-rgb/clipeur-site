@@ -1,6 +1,6 @@
-# clipforge-site
+# clipeur-site
 
-Site de ClipForge : https://xeen28170-rgb.github.io/clipforge-site/
+Site de Clipeur : https://xeen28170-rgb.github.io/clipeur-site/
 
 - Contenu des pages : `src/*.html` · gabarit commun (en-tête, pied de page) : `build.py`
 - Générer le site : `python3 build.py` (écrit dans `docs/`, servi par GitHub Pages)

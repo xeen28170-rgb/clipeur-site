@@ -1,1 +1,1 @@
-{ "name": "clipforge-site", "version": "1.0.0", "description": "Site de ClipForge by Xeen", "main": "server.js", "scripts": { "start": "node server.js" }, "license": "UNLICENSED" }
+{ "name": "clipeur-site", "version": "1.0.0", "description": "Site de Clipeur by Xeen", "main": "server.js", "scripts": { "start": "node server.js" }, "license": "UNLICENSED" }

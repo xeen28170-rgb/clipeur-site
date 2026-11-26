@@ -1,8 +1,8 @@
 // Bouton de téléchargement : récupère la dernière version publiée dans les Releases GitHub du site.
 // Si aucune version n'est publiée, le bouton passe en « Bientôt disponible ».
 (function () {
-  var API = 'https://api.github.com/repos/xeen28170-rgb/clipforge-site/releases/latest';
-  var RELEASES = 'https://github.com/xeen28170-rgb/clipforge-site/releases';
+  var API = 'https://api.github.com/repos/xeen28170-rgb/clipeur-site/releases/latest';
+  var RELEASES = 'https://github.com/xeen28170-rgb/clipeur-site/releases';
   var btns = [document.getElementById('dl-btn'), document.getElementById('dl-btn2')];
   var labels = [document.getElementById('dl-label'), document.getElementById('dl-label2')];
   var meta = document.getElementById('dl-meta');
